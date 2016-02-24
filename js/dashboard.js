@@ -50,6 +50,9 @@ function BuildWidgets()
 			case "sensor":
 				widget.html("<span class=\"icon\">?</span><h3>" + widget.data("title") + "</h3>");
 				break;
+			case "slider":
+        			widget.html("<input type=\"range\" min=\"0\" max=\"100\" step=\"5\" /><h3>" + widget.data("title") + "</h3>");
+        			break;
 		}
 	});
 }
@@ -156,6 +159,9 @@ function DisplayItemState(widget, state)
 				widget.children("span:first").removeClass("dooropen");
 			}
 			break;
+		case "slider":
+      			widget.children("input").val(state);
+      			break;
 	}
 }
 
@@ -358,6 +364,26 @@ $(document).on("mousedown", "widget", function(){
 	}
 } );
 
+$(document).on("change", "widget", function(){
+  	var widget = $(this);
+  
+  	if (widget.data("type") === "slider" ){
+    
+    	$.ajax({
+		type: "POST",
+		url: "http://" + openhabURL + widget.data("item"),
+		data: widget.children("input").val(), 
+		headers: { "Content-Type": "text/plain" }
+	})
+	.done(function(data) {
+		Log("Command sent", 2);
+	}).fail( function(jqXHR, data) { 
+		Log("Error on tap: " + data, 1);
+	});
+    
+  }
+  
+} );
 
 // Helper Functions
 
